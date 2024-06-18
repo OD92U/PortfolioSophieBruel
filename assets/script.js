@@ -1,5 +1,5 @@
-const reponse = await fetch("http://localhost:5678/api/works");
-const works = await reponse.json();
+let reponse = await fetch("http://localhost:5678/api/works");
+let works = await reponse.json();
 
 const responsefilters = await fetch("http://localhost:5678/api/categories");
 const filters = await responsefilters.json();
@@ -131,8 +131,261 @@ buttonTous.addEventListener("click", function() {
     }
 });
 
+const userin = window.sessionStorage.getItem("usertoken");
+if (userin != null) {
+    const barremodif = document.createElement("div");
+    const header = document.querySelector("header");
+    barremodif.id = "barremodif";
+    barremodif.style.backgroundColor = "#000000";
+    barremodif.style.height = "59px";
+    barremodif.style.width = "100%";
+    barremodif.style.justifyContent = "center";
+    barremodif.style.display = "flex";
+    barremodif.style.alignItems ="center";
+    document.body.insertBefore(barremodif, header);
 
+    const buttonmodif1 = document.createElement("button");
+    buttonmodif1.classList.add("buttonmodif");
+    buttonmodif1.id = "buttonmodif1";
+    buttonmodif1.innerHTML = "<i class=\"fa-regular fa-pen-to-square\"></i> Mode édition";
+    buttonmodif1.style.color = "white";
+    buttonmodif1.style.border = "none";
+    buttonmodif1.style.backgroundColor = "#000000";
+    buttonmodif1.style.fontFamily = "Work Sans";
+    buttonmodif1.style.fontSize = "16px";
+    buttonmodif1.style.fontWeight = "400";
+    buttonmodif1.style.justifyContent = "center";
+    buttonmodif1.style.display = "flex";
+    buttonmodif1.style.gap = "10px";
+    document.getElementById("barremodif").appendChild(buttonmodif1);
 
+    const mesprojets = document.createElement("div");
+    mesprojets.id = "mesprojets";
+    mesprojets.style.display = "flex";
+    mesprojets.style.flexDirection ="row";
+    mesprojets.style.justifyContent = "center";
+    mesprojets.style.gap ="20px";
+    document.getElementById("portfolio").insertBefore(mesprojets, document.getElementById("filters"));
+    mesprojets.appendChild(document.querySelector("section#portfolio h2"));
+
+    const buttonmodif2 = document.createElement("button");
+    buttonmodif2.classList.add("buttonmodif");
+    buttonmodif2.id = "buttonmodif2";
+    buttonmodif2.innerHTML = "<i class=\"fa-regular fa-pen-to-square\"></i> modifier";
+    buttonmodif2.style.border = "none";
+    buttonmodif2.style.backgroundColor = "white";
+    buttonmodif2.style.fontFamily = "Work Sans";
+    buttonmodif2.style.fontSize = "14px";
+    buttonmodif2.style.fontWeight = "400";
+    buttonmodif2.style.justifyContent = "center";
+    buttonmodif2.style.display = "flex";
+    buttonmodif2.style.gap = "10px";
+    buttonmodif2.style.height = "25px";
+    buttonmodif2.style.alignItems = "flex-end";
+    mesprojets.appendChild(buttonmodif2);
+}
+
+let modal = null;
+
+const openModal = function (e) {
+    e.preventDefault();
+    document.getElementById("galleryphotos").innerHTML = "";
+    document.querySelector(".modalEdit").style.display = null;
+    const target = document.getElementById("editgallery");
+    target.style.display = null ;
+    target.removeAttribute("aria-hidden");
+    for (let i = 0; i < works.length; i++) {
+        const article = works[i];
+        const divGalery = document.getElementById("galleryphotos");
+        const divWorks = document.createElement("div");
+        divWorks.classList.add("divWorks");
+        divWorks.id = "divWorks" + article.id
+        divWorks.style.backgroundImage = "url(" + article.imageUrl +")";
+        const removeWorksbutton = document.createElement("button");
+        const tempid = article.id;
+        removeWorksbutton.classList.add("removeWorksbutton");
+        removeWorksbutton.id = tempid;
+        removeWorksbutton.innerHTML = "<i class=\"fa-solid fa-trash-can\"></i>";
+
+        divGalery.appendChild(divWorks);
+        divWorks.appendChild(removeWorksbutton);
+        document.getElementById(article.id).addEventListener("click", removeWorks.bind(this, article.id));
+
+    }
+
+    document.getElementById("addphoto").addEventListener("click", openModalAdd);
+
+    modal = target;
+    modal.addEventListener("click", closeModal);
+    modal.querySelector(".modalEdit").addEventListener("click", noPropagation);
+    modal.querySelector(".modalAdd").addEventListener("click", noPropagation);
+    
+}
+
+const openModalAdd = function (e) {
+    document.querySelector(".modalEdit").style.display = "none";
+    document.querySelector(".modalAdd").style.display = null;
+    resetModalAdd();
+    const selectCategory = document.querySelector(".selectCategory")
+    selectCategory.innerHTML = "";
+    for (let i = 0; i < filters.length; i++) {
+        const createOption = document.createElement("option");
+        createOption.value = filters[i].id;
+        createOption.innerHTML = filters[i].name;
+        selectCategory.appendChild(createOption);   
+    }
+    selectCategory.innerHTML += "<option disabled selected value=\"\"></option>";
+}
+
+const previous = function (e) {
+    document.querySelector(".modalEdit").style.display = null;
+    document.querySelector(".modalAdd").style.display = "none";
+}
+
+const closeModal = function (e) {
+    if (modal === null) return
+    e.preventDefault();
+    document.querySelector(".modalEdit").style.display = "none";
+    document.querySelector(".modalAdd").style.display = "none";
+    modal.style.display = "none" ;
+    modal.setAttribute("aria-hidden", true);
+    modal.removeEventListener("click", closeModal);
+    modal.querySelector(".modalEdit").removeEventListener("click", noPropagation);
+    modal.querySelector(".modalAdd").removeEventListener("click", noPropagation);
+    document.getElementById("addphoto").removeEventListener("click", openModalAdd);
+    modal = null;
+}
+
+const noPropagation = function (e) {
+    e.stopPropagation();
+}
+
+const removeWorks = function (id) {
+    const header = { 'Authorization': 'Bearer ' + sessionStorage.getItem("usertoken")};
+    fetch('http://localhost:5678/api/works/'+id+'', {
+       method: "DELETE",
+       headers: header,
+       body: null
+    })
+    const tempid = "divWorks" + id;
+    document.getElementById(tempid).remove();
+    document.querySelector(".gallery").innerHTML = "";
+    works = works.filter(work => !(work.id == id));
+    for (let i = 0; i < works.length; i++) {
+               addWork(works, i);
+            }  
+}
+
+const chooseFile = document.getElementById("getFile");
+
+chooseFile.addEventListener("change", function () {
+  getImgData();
+});
+
+function getImgData() {
+  const files = chooseFile.files[0];
+  if (files) {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(files);
+    fileReader.addEventListener("load", function () {
+      document.getElementById("imgPreview").style.display = null;
+      document.getElementById("imgPreview").innerHTML = '<img src="' + this.result + '" />';
+      document.getElementById("selectPhotoIcon").style.display = "none";
+      document.getElementById("selectPhoto").style.display = "none";
+      document.querySelector(".labelgetFile").style.display = "none";
+    });    
+  }
+}
+
+const resetModalAdd = function () {
+    document.getElementById("imgPreview").style.display = "none";
+    document.getElementById("selectPhotoIcon").style.display = null;
+    document.getElementById("selectPhoto").style.display = null;
+    document.querySelector(".labelgetFile").style.display = null;
+}
+
+document.querySelector(".previousModal").addEventListener("click", previous);
+
+document.querySelectorAll(".closemodal").forEach(b => {
+    b.addEventListener("click", closeModal);
+})
+
+document.querySelectorAll(".buttonmodif").forEach(b => {
+    b.addEventListener("click", openModal);
+})
+
+function checkfilled () {
+    const inputfilecheck = document.getElementById("getFile");
+    const inputtitlecheck = document.getElementById("titleAddWork").value;
+    const inputcategorycheck = document.getElementById("categoryAddwork").value;
+    if (inputfilecheck.files.length != 0) {
+        if (inputtitlecheck != ""){
+            if (inputcategorycheck != "") {
+                return true;
+            }
+        }
+    }
+    else {
+        return false;
+    }
+};
+
+const submitNewWork = document.getElementById("addNewWork");
+submitNewWork.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (checkfilled() == true) {
+    const header = { 'Authorization': 'Bearer ' + sessionStorage.getItem("usertoken")};
+    const formData = new FormData(submitNewWork);
+    fetch('http://localhost:5678/api/works', {
+        method: "POST",
+        headers: header,
+        body: formData
+    })
+    .then(response => response.json())
+    .then(response => {
+
+        const article = response ;
+        works.push(article);
+        const divGalery = document.querySelector(".gallery");
+        const workElement = document.createElement("figure");
+        const imageWork = document.createElement("img");
+        imageWork.src = article.imageUrl;
+        imageWork.alt = article.title;
+        const workCaption = document.createElement("figcaption");
+        workCaption.innerText = article.title;
+
+        divGalery.appendChild(workElement);
+        workElement.appendChild(imageWork);
+        workElement.appendChild(workCaption);
+    });
+    closeModal(event);
+    document.getElementById("validate").style.backgroundColor = "#A7A7A7";
+    document.getElementById("getFile").value = null;
+    } 
+});
+
+function changeValidateColor () {
+    if (checkfilled() == true) {
+        document.getElementById("validate").style.backgroundColor = "#1D6154";
+    }
+    else {
+        document.getElementById("validate").style.backgroundColor = "#A7A7A7";
+    }
+}
+
+const photoselection = document.getElementById("selectPhoto");
+photoselection.addEventListener("click", clickphoto, false);
+
+function clickphoto () {
+    document.getElementById("getFile").click();
+}
+
+const titleCheck = document.getElementById("titleAddWork");
+titleCheck.addEventListener("change", changeValidateColor);
+const imgCheck = document.getElementById("getFile");
+imgCheck.addEventListener("change", changeValidateColor);
+const ctgCheck = document.getElementById("categoryAddwork");
+ctgCheck.addEventListener("change", changeValidateColor);
 
 
 

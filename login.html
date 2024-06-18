@@ -9,8 +9,10 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
-	<script type="module" src="./assets/script.js"></script>
+	<link rel="stylesheet" href="./assets/login.css">
+	<script type="module" src="./assets/login.js"></script>
 </head>
+
 <body>
 <header>
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
@@ -25,27 +27,15 @@
 </header>
 <main id="mainlogin">
     <h2>Log in</h2>
-    <form id="formlogin" action="">
-        <label class="labellogin" for="email">
-              E-mail
-        </label>
-        <input class="inputlogin" type="email" 
-               id="email"
-               name="email"  required>
-
-        <label class="labellogin" for="password">
-              Mot de passe
-        </label>
-        <input class="inputlogin" type="password"
-               id="password" 
-               name="password"  required>
+    <form id="formlogin">
+        <label class="labellogin" for="email">E-mail</label>
+        <input class="inputlogin" type="email" id="email" name="email" required>
+		<label class="labellogin" for="password">Mot de passe</label>
+        <input class="inputlogin" type="password" id="password" name="password" required>
         <div id="connexion">
-            <button id="seconnecter" type="submit"
-                    onclick="solve()">
-                Se connecter
-            </button>
+            <button id="seconnecter" type="submit">Se connecter</button>
+			<span id="error"></span>
         </div>
-        
     </form>
     <p id="mdpoublie">Mot de passe oublié</p>
 	
