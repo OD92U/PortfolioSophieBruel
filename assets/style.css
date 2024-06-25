@@ -104,6 +104,20 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
+
+.buttonloginout {
+	border: none;
+	background-color: white;
+	color: #000000;
+	font-family: "Work Sans";
+	font-weight: 400;
+	font-size: 16px;
+}
+
+.buttonloginout:hover {
+	color: #B1663C;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -403,3 +417,4 @@ footer nav ul {
 	background-color: #A7A7A7;
 	border: none;
 }
+

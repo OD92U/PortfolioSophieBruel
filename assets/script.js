@@ -131,6 +131,19 @@ buttonTous.addEventListener("click", function() {
     }
 });
 
+const buttonUserIn = document.getElementById("buttonin");
+const buttonUserOut = document.getElementById("buttonout");
+buttonUserIn.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.location.href = "/login.html"
+})
+buttonUserOut.addEventListener("click", (event) => {
+    sessionStorage.clear();
+    buttonUserIn.style.display = null;
+    buttonUserOut.style.display = "none";
+    location.reload();
+})
+
 const userin = window.sessionStorage.getItem("usertoken");
 if (userin != null) {
     const barremodif = document.createElement("div");
@@ -183,6 +196,12 @@ if (userin != null) {
     buttonmodif2.style.height = "25px";
     buttonmodif2.style.alignItems = "flex-end";
     mesprojets.appendChild(buttonmodif2);
+
+    divFilters.style.display = "none";
+    buttonUserIn.style.display = "none";
+    buttonUserOut.style.display = null;
+
+
 }
 
 let modal = null;
@@ -314,7 +333,7 @@ document.querySelectorAll(".buttonmodif").forEach(b => {
     b.addEventListener("click", openModal);
 })
 
-function checkfilled () {
+function checkFilled () {
     const inputfilecheck = document.getElementById("getFile");
     const inputtitlecheck = document.getElementById("titleAddWork").value;
     const inputcategorycheck = document.getElementById("categoryAddwork").value;
@@ -333,7 +352,7 @@ function checkfilled () {
 const submitNewWork = document.getElementById("addNewWork");
 submitNewWork.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (checkfilled() == true) {
+    if (checkFilled()) {
     const header = { 'Authorization': 'Bearer ' + sessionStorage.getItem("usertoken")};
     const formData = new FormData(submitNewWork);
     fetch('http://localhost:5678/api/works', {
@@ -361,11 +380,12 @@ submitNewWork.addEventListener("submit", (event) => {
     closeModal(event);
     document.getElementById("validate").style.backgroundColor = "#A7A7A7";
     document.getElementById("getFile").value = null;
+    document.getElementById("titleAddWork").value = null;
     } 
 });
 
 function changeValidateColor () {
-    if (checkfilled() == true) {
+    if (checkFilled() == true) {
         document.getElementById("validate").style.backgroundColor = "#1D6154";
     }
     else {
